@@ -17,6 +17,6 @@ Some **banner** files with a specific graphical template representation using AS
 +   [thinkertoy](templates/thinkertoy.txt)
 
 ##  Steps
-+   [ ] Parse banner files into a character array
-+   [ ] Split the string to be printed into multiple parts
-+   [ ] For each part iterate over the character and display it line by line
++   [x] Parse banner files into a character array
++   [x] Split the string to be printed into multiple parts
++   [x] For each part iterate over the character and display it line by line
