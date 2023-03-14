@@ -33,7 +33,7 @@ func ParseFile(name string) map[int][][]rune {
 }
 
 func PrintAsciiArt(text []string, asciiCharacters map[int][][]rune) {
-	for i, word := range text {
+	for _, word := range text {
 		if word != "" {
 			for j := 0; j < 8; j++ {
 				for _, char := range word {
@@ -42,8 +42,7 @@ func PrintAsciiArt(text []string, asciiCharacters map[int][][]rune) {
 				}
 				fmt.Println()
 			}
-		}
-		if i < len(text)-1 {
+		} else if word != "\n" {
 			fmt.Println()
 		}
 	}
