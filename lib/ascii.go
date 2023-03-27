@@ -6,6 +6,17 @@ import (
 	"strings"
 )
 
+func IsValid(text []string) bool {
+	for _, word := range text {
+		for _, char := range word {
+			if char < 32 || char > 127 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func ParseFile(name string) map[int][][]rune {
 	_content, err := os.ReadFile("templates/"+name)
 	content := string(_content)

@@ -2,6 +2,7 @@ package main
 
 import (
 	ascii "ascii_art/lib"
+	"fmt"
 	"os"
 	"strings"
 )
@@ -9,7 +10,11 @@ import (
 func main() {
 	if len(os.Args) == 2 {
 		text := strings.Split(os.Args[1], `\n`)
-		asciiCharacters := ascii.ParseFile("standard.txt")
-		ascii.PrintAsciiArt(text, asciiCharacters)
+		if ascii.IsValid(text) {
+			asciiCharacters := ascii.ParseFile("standard.txt")
+			ascii.PrintAsciiArt(text, asciiCharacters)
+		} else {
+			fmt.Println("❌ ERROR: Argument containing unknown characters")
+		}
 	}
 }
