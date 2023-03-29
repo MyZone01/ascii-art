@@ -20,3 +20,11 @@ Some **banner** files with a specific graphical template representation using AS
 +   [x] Parse banner files into a character array
 +   [x] Split the string to be printed into multiple parts
 +   [x] For each part iterate over the character and display it line by line
++   [x] Output
++   [x] Reverse
++   [x] Type
++   [ ] Align
+    +   [x] Center
+    +   [x] Right
+    +   [x] Left
+    +   [ ] Justify
