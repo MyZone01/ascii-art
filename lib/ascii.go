@@ -6,6 +6,13 @@ import (
 	"strings"
 )
 
+const (
+	ALIGN_LEFT    = "left"
+	ALIGN_CENTER  = "center"
+	ALIGN_RIGHT   = "right"
+	ALIGN_JUSTIFY = "justify"
+)
+
 func IsValid(text []string) bool {
 	for _, word := range text {
 		for _, char := range word {
@@ -15,6 +22,43 @@ func IsValid(text []string) bool {
 		}
 	}
 	return true
+}
+
+func IsCharacterDelimiter(text [][]rune, line, col int) bool {
+	return text[line][col] == ' ' && text[line+1][col] == ' ' && text[line+2][col] == ' ' && text[line+3][col] == ' ' && text[line+4][col] == ' ' && text[line+5][col] == ' ' && text[line+6][col] == ' ' && text[line+7][col] == ' '
+}
+
+func GetArgs() (string, string, string, string, bool) {
+	input := ""
+	typeAscii := "standard"
+	outputFile := ""
+	isReverse := false
+	align := "left"
+	for _, arg := range os.Args {
+		if len(arg) > 9 && arg[:9] == "--output=" {
+			outputFile = strings.Split(arg, `=`)[1]
+		} else if len(arg) > 8 && arg[:8] == "--align=" {
+			align = strings.Split(arg, `=`)[1]
+		} else if len(arg) > 10 && arg[:10] == "--reverse=" {
+			fileName := strings.Split(arg, `=`)[1]
+			_text, err := os.ReadFile(fileName)
+			if err != nil {
+				fmt.Println("❌ ERROR: File not found")
+				os.Exit(1)
+			}
+			input = string(_text)
+			isReverse = true
+		} else if arg == "standard" || arg == "thinkertoy" || arg == "shadow" {
+			typeAscii = arg
+		} else {
+			input = arg
+		}
+	}
+	return input, typeAscii, outputFile, align, isReverse
+}
+
+func PrintAscii(output string) {
+	fmt.Print(output)
 }
 
 func ParseFile(name string) map[int][][]rune {
@@ -43,24 +87,58 @@ func ParseFile(name string) map[int][][]rune {
 	return asciiCharacters
 }
 
-func ConvertTextToAsciiArt(text []string, asciiCharacters map[int][][]rune) string {
+func SaveFile(fileName string, text string) {
+	file, err := os.Create(fileName)
+	if err != nil {
+		fmt.Println("❌ ERROR: Output file creation error")
+	}
+	file.WriteString(text)
+	file.Close()
+}
+
+func ConvertTextToArt(_text, align string, asciiCharacters map[int][][]rune) string {
 	result := ""
-	for _, word := range text {
-		if word != "" {
+	text := strings.Split(_text, `\n`)
+	if !IsValid(text) {
+		fmt.Println("❌ ERROR: Argument containing unknown characters")
+		os.Exit(1)
+	}
+	// Get the terminal width size
+	width := GetTerminalWidth()
+
+	for _, line := range text {
+		if line != "" {
+			buffer := ""
 			for j := 0; j < 8; j++ {
-				for _, char := range word {
-					result += string(asciiCharacters[int(char)][j])
+				for _, char := range line {
+					buffer += string(asciiCharacters[int(char)][j])
 				}
+				if len(buffer) > 0 {
+					switch align {
+					case ALIGN_LEFT:
+						result += buffer
+					case ALIGN_CENTER:
+						result += AlignCenter(buffer, width)
+					case ALIGN_RIGHT:
+						result += AlignRight(buffer, width)
+					default:
+						fmt.Fprintln(os.Stderr, "Invalid alignment type")
+						os.Exit(1)
+					}
+				} else {
+					result += buffer
+				}
+				buffer = ""
 				result += "\n"
 			}
-		} else if word != "\n" {
+		} else if line != "\n" {
 			result += "\n"
 		}
 	}
 	return result
 }
 
-func ConvertAsciiArtToText(_text string, asciiCharacters map[int][][]rune) string {
+func ConvertArtToText(_text, algin string, asciiCharacters map[int][][]rune) string {
 	result := ""
 	text := [][]rune{}
 	_lines := strings.Split(strings.ReplaceAll(_text, "\r\n", "\n"), "\n")
@@ -69,21 +147,18 @@ func ConvertAsciiArtToText(_text string, asciiCharacters map[int][][]rune) strin
 	}
 	previousIndex := 0
 	nbSuccessiveSpace := 0
-	isSuccessiveSpace := false
 	for i := range text[0] {
 		if IsCharacterDelimiter(text, 0, i) {
 			nbSuccessiveSpace++
-			if !isSuccessiveSpace {
+			if nbSuccessiveSpace == 1 {
 				result += GetMatchingCharacter(text, asciiCharacters, previousIndex, i+1, 0)
-				nbSuccessiveSpace = 0
-			} else if nbSuccessiveSpace == 6 {
+			} else if nbSuccessiveSpace == 7 {
 				result += " "
 				nbSuccessiveSpace = 0
 			}
 			previousIndex = i + 1
-			isSuccessiveSpace = true
 		} else {
-			isSuccessiveSpace = false
+			nbSuccessiveSpace = 0
 		}
 	}
 	return result
@@ -104,18 +179,5 @@ func GetMatchingCharacter(text [][]rune, asciiCharacters map[int][][]rune, first
 			}
 		}
 	}
-	return "€"
-}
-
-func IsCharacterDelimiter(text [][]rune, line, col int) bool {
-	return text[line][col] == ' ' && text[line+1][col] == ' ' && text[line+2][col] == ' ' && text[line+3][col] == ' ' && text[line+4][col] == ' ' && text[line+5][col] == ' ' && text[line+6][col] == ' ' && text[line+7][col] == ' '
-}
-
-func PrintText(text [][]rune) {
-	for _, l := range text {
-		for _, char := range l {
-			fmt.Print(string(char))
-		}
-		fmt.Println()
-	}
+	return "£€"
 }
