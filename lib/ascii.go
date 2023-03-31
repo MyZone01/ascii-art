@@ -76,7 +76,7 @@ func PrintAscii(output string) {
 	fmt.Print(output)
 }
 
-func ParseFile(name string) map[int][][]rune {
+func ParseFile(name string, isJustifying bool) map[int][][]rune {
 	_content, err := os.ReadFile("templates/" + name + ".txt")
 	content := string(_content)
 	if err != nil {
@@ -97,6 +97,9 @@ func ParseFile(name string) map[int][][]rune {
 			continue
 		}
 		line := lines[i]
+		if actualChar != 32 && isJustifying {
+			line = strings.ReplaceAll(line, " ", "R")
+		}
 		character = append(character, []rune(line))
 	}
 	return asciiCharacters
@@ -138,6 +141,8 @@ func ConvertTextToArt(_text, align, color, colorize string, isColorizing bool, a
 						result += AlignCenter(buffer, width)
 					case ALIGN_RIGHT:
 						result += AlignRight(buffer, width)
+					case ALIGN_JUSTIFY:
+						result += AlignJustify(buffer, width)
 					default:
 						fmt.Fprintln(os.Stderr, "Invalid alignment type")
 						os.Exit(1)

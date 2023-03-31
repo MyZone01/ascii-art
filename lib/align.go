@@ -42,30 +42,35 @@ func AlignRight(text string, width int) string {
 
 // Function to justify text
 func AlignJustify(text string, width int) string {
-	words := strings.Fields(text)
+	words := strings.Split(text, "      ")
 	wordsCount := len(words)
+	textSize := 0
+	for _, word := range words {
+		textSize += len(word)
+	}
 
 	// If there's only one word or the width is smaller than the length of the
 	// text, return the text aligned to the left
-	if wordsCount == 1 || len(text) >= width {
+	if wordsCount == 1 || textSize >= width {
 		return AlignLeft(text, width)
 	}
 
-	spaceCount := width - len(text)
-	spacesPerWord := spaceCount / (wordsCount - 1)
-	extraSpaces := spaceCount % (wordsCount - 1)
+	numGaps := wordsCount - 1
+	spaceCount := width - textSize
+	gapSize := spaceCount / (numGaps)
+	extraSpaces := spaceCount % (numGaps)
 
-	// Add the first word
-	justifiedText := words[0]
-
-	// Add the spaces between the words
-	for i := 1; i < wordsCount; i++ {
-		spaces := strings.Repeat(" ", spacesPerWord)
-		if i <= extraSpaces {
-			spaces += " "
+	// Build the justified text
+	var justifiedText string
+	for i, word := range words {
+		justifiedText += word
+		if i < numGaps {
+			justifiedText += strings.Repeat(" ", gapSize)
+			if i < extraSpaces {
+				justifiedText += " "
+			}
 		}
-		justifiedText += spaces + words[i]
 	}
 
-	return justifiedText
+	return strings.ReplaceAll(justifiedText, "R", " ")
 }
