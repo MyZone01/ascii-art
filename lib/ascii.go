@@ -8,6 +8,7 @@ import (
 
 func ConvertTextToArt(_text, align, color, colorize string, isColorizing bool, asciiCharacters map[int][][]rune) string {
 	result := ""
+	colorGap := 0
 	text := strings.Split(_text, `\n`)
 	if !IsValid(text) {
 		fmt.Println("❌ ERROR: Argument containing unknown characters")
@@ -22,19 +23,26 @@ func ConvertTextToArt(_text, align, color, colorize string, isColorizing bool, a
 			for j := 0; j < 8; j++ {
 				for _, _char := range line {
 					char := string(asciiCharacters[int(_char)][j])
-					char = Colorize(colorize, string(_char), isColorizing, char, color)
+					char, isColored := Colorize(colorize, string(_char), isColorizing, char, color)
+					if isColored {
+						colorGap += len(color) + 4
+					}
 					buffer += char
 				}
 				if len(buffer) > 0 {
 					switch align {
 					case ALIGN_LEFT:
 						result += buffer
+						colorGap = 0
 					case ALIGN_CENTER:
-						result += AlignCenter(buffer, width)
+						result += AlignCenter(buffer, width, colorGap)
+						colorGap = 0
 					case ALIGN_RIGHT:
-						result += AlignRight(buffer, width)
+						result += AlignRight(buffer, width, colorGap)
+						colorGap = 0
 					case ALIGN_JUSTIFY:
-						result += AlignJustify(buffer, width)
+						result += AlignJustify(buffer, width, colorGap)
+						colorGap = 0
 					default:
 						fmt.Fprintln(os.Stderr, "Invalid alignment type")
 						os.Exit(1)
@@ -54,6 +62,7 @@ func ConvertTextToArt(_text, align, color, colorize string, isColorizing bool, a
 
 func ConvertArtToText(_text, algin, color, colorize string, isColorizing bool, asciiCharacters map[int][][]rune) string {
 	result := ""
+	colorGap := 0
 	text := [][]rune{}
 	_lines := strings.Split(strings.ReplaceAll(_text, "\r\n", "\n"), "\n")
 	for _, l := range _lines {
@@ -67,7 +76,10 @@ func ConvertArtToText(_text, algin, color, colorize string, isColorizing bool, a
 				nbSuccessiveSpace++
 				if nbSuccessiveSpace == 1 {
 					char := GetMatchingCharacter(text, asciiCharacters, previousIndex, j+1, i)
-					char = Colorize(colorize, char, isColorizing, char, color)
+					char, isColored := Colorize(colorize, char, isColorizing, char, color)
+					if isColored {
+						colorGap += len(color)
+					}
 					result += char
 				} else if nbSuccessiveSpace == 7 {
 					result += " "

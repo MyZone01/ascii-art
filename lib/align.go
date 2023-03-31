@@ -30,25 +30,25 @@ func GetTerminalWidth() int {
 }
 
 // Function to align text to the left
-func AlignLeft(text string, width int) string {
-	return text + strings.Repeat(" ", width-len(text))
+func AlignLeft(text string, width, colorGap int) string {
+	return text + strings.Repeat(" ", width-len(text)+colorGap)
 }
 
 // Function to align text to the center
-func AlignCenter(text string, width int) string {
-	padding := width - len(text)
+func AlignCenter(text string, width, colorGap int) string {
+	padding := width - len(text) + colorGap
 	leftPadding := padding / 2
 	rightPadding := padding - leftPadding
 	return strings.Repeat(" ", leftPadding) + text + strings.Repeat(" ", rightPadding)
 }
 
 // Function to align text to the right
-func AlignRight(text string, width int) string {
-	return strings.Repeat(" ", width-len(text)) + text
+func AlignRight(text string, width, colorGap int) string {
+	return strings.Repeat(" ", width-len(text)+colorGap) + text
 }
 
 // Function to justify text
-func AlignJustify(text string, width int) string {
+func AlignJustify(text string, width, colorGap int) string {
 	words := strings.Split(text, "      ")
 	wordsCount := len(words)
 	textSize := 0
@@ -59,11 +59,11 @@ func AlignJustify(text string, width int) string {
 	// If there's only one word or the width is smaller than the length of the
 	// text, return the text aligned to the left
 	if wordsCount == 1 || textSize >= width {
-		return AlignLeft(text, width)
+		return AlignLeft(text, width, colorGap)
 	}
 
 	numGaps := wordsCount - 1
-	spaceCount := width - textSize
+	spaceCount := width - textSize + colorGap
 	gapSize := spaceCount / (numGaps)
 	extraSpaces := spaceCount % (numGaps)
 

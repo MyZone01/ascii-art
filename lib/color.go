@@ -18,11 +18,12 @@ var ansiColors = map[string]string{
 	"white":   "\033[37m",
 }
 
-func Colorize(colorize string, _char string, isColorizing bool, char string, color string) string {
-	if strings.Contains(colorize, _char) && isColorizing {
+func Colorize(colorize string, _char string, isColorizing bool, char string, color string) (string, bool) {
+	if strings.Contains(colorize, _char) && isColorizing && char != " " && char != "R" {
 		char = fmt.Sprintf("%s%s%s", color, string(char), "\033[0m")
+		return char, true
 	}
-	return char
+	return char, false
 }
 
 func HexToRGB(hex string) string {
