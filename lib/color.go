@@ -43,7 +43,7 @@ func HexToRGB(hex string) string {
 	return fmt.Sprintf("rgb(%d, %d, %d)", red, green, blue)
 }
 
-func ParseRGB(input string) string {
+func RGBToANSI(input string) string {
 	// Remove "rgb(" and ")"
 	input = strings.TrimPrefix(input, "rgb(")
 	input = strings.TrimSuffix(input, ")")
@@ -51,7 +51,7 @@ func ParseRGB(input string) string {
 	// Split into components
 	components := strings.Split(input, ",")
 	if len(components) != 3 {
-		fmt.Println("invalid format")
+		fmt.Println("❌ ERROR: Invalid format")
 		os.Exit(1)
 	}
 

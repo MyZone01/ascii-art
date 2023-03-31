@@ -6,6 +6,13 @@ import (
 	"unsafe"
 )
 
+const (
+	ALIGN_LEFT    = "left"
+	ALIGN_CENTER  = "center"
+	ALIGN_RIGHT   = "right"
+	ALIGN_JUSTIFY = "justify"
+)
+
 // Function to get the terminal width size
 func GetTerminalWidth() int {
 	winsize := struct {

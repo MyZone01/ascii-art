@@ -33,3 +33,5 @@ Some **banner** files with a specific graphical template representation using AS
     +   [x] Left
     +   [x] Justify
 +   [x] Color
++   [ ] Error Handling
++   [ ] Test file
