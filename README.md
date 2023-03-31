@@ -1,6 +1,8 @@
-#   ASCII ART
+#   🎨 ASCII ART PERSONAL
 ##  Description
 ASCII-art is a program which consists in receiving a string as an argument and outputting the string in a graphic representation using ASCII. Time to write big.
+
+<center>
 
 | | | | | | | | | | | | | | | | |
 |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
@@ -10,6 +12,8 @@ ASCII-art is a program which consists in receiving a string as an argument and o
 P	|   Q	|   R	|   S	|   T	|   U	|   V	|   W	|   X	|   Y	|   Z	|   [	|   \	|   ]	|   ^	|   _
 `	|   a	|   b	|   c	|   d	|   e	|   f	|   g	|   h	|   i	|   j	|   k	|   l	|   m	|   n	|   o
 p	|   q	|   r	|   s	|   t	|   u	|   v	|   w	|   x	|   y	|   z	|   {	|   \|	|   }	|   ~	|   
+
+</center>
 
 Some **banner** files with a specific graphical template representation using ASCII will be given. The files are formatted in a way that is not necessary to change them. Each character has a height of 8 lines. Characters are separated by a new line \n.
 +   [shadow](templates/shadow.txt)
@@ -23,8 +27,9 @@ Some **banner** files with a specific graphical template representation using AS
 +   [x] Output
 +   [x] Reverse
 +   [x] Type
-+   [ ] Align
++   [x] Align
     +   [x] Center
     +   [x] Right
     +   [x] Left
-    +   [ ] Justify
+    +   [x] Justify
++   [x] Color
