@@ -62,7 +62,7 @@ func IsValid(text []string) bool {
 }
 
 func IsCharacterDelimiter(text [][]rune, line, col int) bool {
-	return text[line][col] == ' ' && text[line+1][col] == ' ' && text[line+2][col] == ' ' && text[line+3][col] == ' ' && text[line+4][col] == ' ' && text[line+5][col] == ' ' && text[line+6][col] == ' ' && text[line+7][col] == ' '
+	return line+7 <= len(text)-1 && text[line][col] == ' ' && text[line+1][col] == ' ' && text[line+2][col] == ' ' && text[line+3][col] == ' ' && text[line+4][col] == ' ' && text[line+5][col] == ' ' && text[line+6][col] == ' ' && text[line+7][col] == ' '
 }
 
 func PrintAscii(output string) {
