@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func ConvertTextToArt(_text, align, color, colorize string, isColorizing bool, asciiCharacters map[int][][]rune) string {
+func ConvertTextToArt(_text, align, color, colorize string, asciiCharacters map[int][][]rune) string {
 	result := ""
 	colorGap := 0
 	text := strings.Split(_text, `\n`)
@@ -14,7 +14,6 @@ func ConvertTextToArt(_text, align, color, colorize string, isColorizing bool, a
 		fmt.Println("❌ ERROR: Argument containing unknown characters")
 		os.Exit(1)
 	}
-	// Get the terminal width size
 	width := GetTerminalWidth()
 
 	for _, line := range text {
@@ -23,7 +22,7 @@ func ConvertTextToArt(_text, align, color, colorize string, isColorizing bool, a
 			for j := 0; j < 8; j++ {
 				for _, _char := range line {
 					char := string(asciiCharacters[int(_char)][j])
-					char, isColored := Colorize(colorize, string(_char), isColorizing, char, color)
+					char, isColored := Colorize(colorize, string(_char), char, color)
 					if isColored {
 						colorGap += len(color) + 4
 					}
@@ -41,7 +40,7 @@ func ConvertTextToArt(_text, align, color, colorize string, isColorizing bool, a
 						result += AlignRight(buffer, width, colorGap)
 						colorGap = 0
 					case ALIGN_JUSTIFY:
-						result += AlignJustify(buffer, width, colorGap)
+						result += AlignJustify(strings.ReplaceAll(buffer, "      ", " "), width, colorGap)
 						colorGap = 0
 					default:
 						fmt.Fprintln(os.Stderr, "Invalid alignment type")
@@ -60,10 +59,11 @@ func ConvertTextToArt(_text, align, color, colorize string, isColorizing bool, a
 	return result
 }
 
-func ConvertArtToText(_text, algin, color, colorize string, isColorizing bool, asciiCharacters map[int][][]rune) string {
+func ConvertArtToText(_text, align, color, colorize string, asciiCharacters map[int][][]rune) string {
 	result := ""
 	colorGap := 0
 	text := [][]rune{}
+	width := GetTerminalWidth()
 	_lines := strings.Split(strings.ReplaceAll(_text, "\r\n", "\n"), "\n")
 	for _, l := range _lines {
 		text = append(text, []rune(l))
@@ -71,24 +71,42 @@ func ConvertArtToText(_text, algin, color, colorize string, isColorizing bool, a
 	for i := 0; i < len(text); i = i + 8 {
 		previousIndex := 0
 		nbSuccessiveSpace := 0
+		buffer:=""
 		for j := range text[i] {
 			if IsCharacterDelimiter(text, i, j) {
 				nbSuccessiveSpace++
 				if nbSuccessiveSpace == 1 {
 					char := GetMatchingCharacter(text, asciiCharacters, previousIndex, j+1, i)
-					char, isColored := Colorize(colorize, char, isColorizing, char, color)
+					char, isColored := Colorize(colorize, char, char, color)
 					if isColored {
 						colorGap += len(color)
 					}
-					result += char
+					buffer += char
 				} else if nbSuccessiveSpace == 7 {
-					result += " "
+					buffer += " "
 					nbSuccessiveSpace = 0
 				}
 				previousIndex = j + 1
 			} else {
 				nbSuccessiveSpace = 0
 			}
+		}
+		switch align {
+		case ALIGN_LEFT:
+			result += buffer
+			colorGap = 0
+		case ALIGN_CENTER:
+			result += AlignCenter(buffer, width, colorGap)
+			colorGap = 0
+		case ALIGN_RIGHT:
+			result += AlignRight(buffer, width, colorGap)
+			colorGap = 0
+		case ALIGN_JUSTIFY:
+			result += AlignJustify(strings.ReplaceAll(buffer, "      ", " "), width, colorGap)
+			colorGap = 0
+		default:
+			fmt.Fprintln(os.Stderr, "Invalid alignment type")
+			os.Exit(1)
 		}
 		if i+8 < len(text)-1 {
 			result += `\n`

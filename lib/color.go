@@ -18,8 +18,8 @@ var ansiColors = map[string]string{
 	"white":   "\033[37m",
 }
 
-func Colorize(colorize string, _char string, isColorizing bool, char string, color string) (string, bool) {
-	if strings.Contains(colorize, _char) && isColorizing && char != " " && char != "R" {
+func Colorize(colorize string, _char string, char string, color string) (string, bool) {
+	if strings.Contains(colorize, _char) && char != " " && char != "R" {
 		char = fmt.Sprintf("%s%s%s", color, string(char), "\033[0m")
 		return char, true
 	}

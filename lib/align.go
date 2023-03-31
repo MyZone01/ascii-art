@@ -49,7 +49,7 @@ func AlignRight(text string, width, colorGap int) string {
 
 // Function to justify text
 func AlignJustify(text string, width, colorGap int) string {
-	words := strings.Split(text, "      ")
+	words := strings.Split(text, " ")
 	wordsCount := len(words)
 	textSize := 0
 	for _, word := range words {

@@ -9,11 +9,11 @@ func main() {
 	if len(os.Args) >= 2 {
 		output := ""
 		input, typeAscii, outputFile, align, color, colorize, isReverse := ascii.GetArgs()
-		asciiCharacters := ascii.ParseFile(typeAscii, align == ascii.ALIGN_JUSTIFY)
+		asciiCharacters := ascii.ParseFile(typeAscii, align == ascii.ALIGN_JUSTIFY && !isReverse)
 		if isReverse {
-			output = ascii.ConvertArtToText(input, align, color, colorize, outputFile == "", asciiCharacters)
+			output = ascii.ConvertArtToText(input, align, color, colorize, asciiCharacters)
 		} else {
-			output = ascii.ConvertTextToArt(input, align, color, colorize, outputFile == "", asciiCharacters)
+			output = ascii.ConvertTextToArt(input, align, color, colorize, asciiCharacters)
 		}
 		if outputFile != "" {
 			ascii.SaveFile(outputFile, output)
