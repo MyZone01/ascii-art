@@ -59,6 +59,7 @@ func AlignJustify(text string, width, colorGap int) string {
 	// If there's only one word or the width is smaller than the length of the
 	// text, return the text aligned to the left
 	if wordsCount == 1 || textSize >= width {
+		text := strings.ReplaceAll(text, "R", " ")
 		return AlignLeft(text, width, colorGap)
 	}
 
