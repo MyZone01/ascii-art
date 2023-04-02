@@ -70,7 +70,7 @@ func PrintAscii(output string) {
 }
 
 func ParseFile(name string, isJustifying bool) map[int][][]rune {
-	_content, err := os.ReadFile("templates/" + name + ".txt")
+	_content, err := os.ReadFile("fonts/" + name + ".txt")
 	content := string(_content)
 	if err != nil {
 		fmt.Println("ERROR: exit when reading file")
