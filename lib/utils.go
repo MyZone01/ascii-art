@@ -27,6 +27,10 @@ func GetArgs() (string, string, string, string, string, string, bool) {
 				os.Exit(1)
 			}
 			input = string(_text)
+			if len(input) == 0 {
+				fmt.Println("❌ ERROR: Bad file format")
+				os.Exit(1)
+			}
 			isReverse = true
 		} else if len(arg) > 8 && arg[:8] == "--color=" {
 			arr := strings.Split(arg, `=`)
@@ -62,7 +66,24 @@ func IsValid(text []string) bool {
 }
 
 func IsCharacterDelimiter(text [][]rune, line, col int) bool {
-	return line+7 <= len(text)-1 && text[line][col] == ' ' && text[line+1][col] == ' ' && text[line+2][col] == ' ' && text[line+3][col] == ' ' && text[line+4][col] == ' ' && text[line+5][col] == ' ' && text[line+6][col] == ' ' && text[line+7][col] == ' '
+	return line+7 <= len(text)-1 &&
+		len(text[line]) > 0 && text[line][col] == ' ' &&
+		len(text[line+1]) > 0 && text[line+1][col] == ' ' &&
+		len(text[line+2]) > 0 && text[line+2][col] == ' ' &&
+		len(text[line+3]) > 0 && text[line+3][col] == ' ' &&
+		len(text[line+4]) > 0 && text[line+4][col] == ' ' &&
+		len(text[line+5]) > 0 && text[line+5][col] == ' ' &&
+		len(text[line+6]) > 0 && text[line+6][col] == ' ' &&
+		len(text[line+7]) > 0 && text[line+7][col] == ' '
+}
+
+func IsAsciiSpace(text [][]rune, line, col int) bool {
+	return col+6 <= len(text[line])-1 && IsCharacterDelimiter(text, line, col+1) &&
+		IsCharacterDelimiter(text, line, col+2) &&
+		IsCharacterDelimiter(text, line, col+3) &&
+		IsCharacterDelimiter(text, line, col+4) &&
+		IsCharacterDelimiter(text, line, col+5) &&
+		IsCharacterDelimiter(text, line, col+6)
 }
 
 func PrintAscii(output string) {

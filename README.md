@@ -26,6 +26,9 @@ Some **banner** files with a specific graphical template representation using AS
 +   [x] For each part iterate over the character and display it line by line
 +   [x] Output
 +   [x] Reverse
+    +   [ ] " H"
+    +   [ ] "  "
+    +   [ ] "\n H"
 +   [x] Type
 +   [x] Align
     +   [x] Center
