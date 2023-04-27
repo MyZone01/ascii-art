@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"unicode/utf8"
 )
 
 func ConvertTextToArt(_text, align, color, colorize string, asciiCharacters map[int][][]rune) string {
@@ -16,7 +17,7 @@ func ConvertTextToArt(_text, align, color, colorize string, asciiCharacters map[
 	}
 	width := GetTerminalWidth()
 
-	for _, line := range text {
+	for i, line := range text {
 		if line != "" {
 			buffer := ""
 			for j := 0; j < 8; j++ {
@@ -24,7 +25,7 @@ func ConvertTextToArt(_text, align, color, colorize string, asciiCharacters map[
 					char := string(asciiCharacters[int(_char)][j])
 					char, isColored := Colorize(colorize, string(_char), char, color)
 					if isColored {
-						colorGap += len(color) + 4
+						colorGap += utf8.RuneCountInString(color) + 4
 					}
 					buffer += char
 				}
@@ -43,7 +44,7 @@ func ConvertTextToArt(_text, align, color, colorize string, asciiCharacters map[
 						result += AlignJustify(strings.ReplaceAll(buffer, "      ", " "), width, colorGap)
 						colorGap = 0
 					default:
-						fmt.Fprintln(os.Stderr, "Invalid alignment type")
+						fmt.Println("❌ ERROR: Invalid alignment type")
 						os.Exit(1)
 					}
 				} else {
@@ -53,7 +54,9 @@ func ConvertTextToArt(_text, align, color, colorize string, asciiCharacters map[
 				result += "\n"
 			}
 		} else if line != "\n" {
-			result += "\n"
+			if i != len(text)-1 {
+				result += "\n"
+			}
 		}
 	}
 	return result
@@ -67,7 +70,7 @@ func ConvertArtToText(_text, align, color, colorize string, asciiCharacters map[
 	colorGap := 0
 	text := [][]rune{}
 	width := GetTerminalWidth()
-	_lines := strings.Split(strings.ReplaceAll(_text[:len(_text)-1], "\r\n", "\n"), "\n")
+	_lines := strings.Split(strings.ReplaceAll(_text, "\r\n", "\n"), "\n")
 	for _, l := range _lines {
 		text = append(text, []rune(l))
 	}

@@ -1,9 +1,12 @@
 package ascii_art
 
 import (
+	"fmt"
+	"os"
 	"strings"
 	"syscall"
 	"unsafe"
+	"unicode/utf8"
 )
 
 const (
@@ -31,12 +34,17 @@ func GetTerminalWidth() int {
 
 // Function to align text to the left
 func AlignLeft(text string, width, colorGap int) string {
-	return text + strings.Repeat(" ", width-len(text)+colorGap)
+	gap := width-utf8.RuneCountInString(text)+colorGap
+	if gap < 0 {
+		fmt.Println("Can't align text to right the gap value is negative", gap)
+		os.Exit(1)
+	}
+	return text + strings.Repeat(" ", gap)
 }
 
 // Function to align text to the center
 func AlignCenter(text string, width, colorGap int) string {
-	padding := width - len(text) + colorGap
+	padding := width - utf8.RuneCountInString(text) + colorGap
 	leftPadding := padding / 2
 	rightPadding := padding - leftPadding
 	return strings.Repeat(" ", leftPadding) + text + strings.Repeat(" ", rightPadding)
@@ -44,7 +52,12 @@ func AlignCenter(text string, width, colorGap int) string {
 
 // Function to align text to the right
 func AlignRight(text string, width, colorGap int) string {
-	return strings.Repeat(" ", width-len(text)+colorGap) + text
+	gap := width-utf8.RuneCountInString(text)+colorGap
+	if gap < 0 {
+		fmt.Println("Can't align text to right the gap value is negative", gap)
+		os.Exit(1)
+	}
+	return strings.Repeat(" ", gap) + text
 }
 
 // Function to justify text
@@ -53,7 +66,7 @@ func AlignJustify(text string, width, colorGap int) string {
 	wordsCount := len(words)
 	textSize := 0
 	for _, word := range words {
-		textSize += len(word)
+		textSize += utf8.RuneCountInString(word)
 	}
 
 	// If there's only one word or the width is smaller than the length of the
@@ -66,6 +79,10 @@ func AlignJustify(text string, width, colorGap int) string {
 	numGaps := wordsCount - 1
 	spaceCount := width - textSize + colorGap
 	gapSize := spaceCount / (numGaps)
+	if gapSize < 0 {
+		fmt.Println("Can't align text to right the gap value is negative", gapSize)
+		os.Exit(1)
+	}
 	extraSpaces := spaceCount % (numGaps)
 
 	// Build the justified text

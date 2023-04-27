@@ -19,9 +19,11 @@ var ansiColors = map[string]string{
 }
 
 func Colorize(colorize string, _char string, char string, color string) (string, bool) {
-	if strings.Contains(colorize, _char) && char != " " && char != "R" {
-		char = fmt.Sprintf("%s%s%s", color, string(char), "\033[0m")
-		return char, true
+	if  color != "" {
+		if colorize == "" || (strings.Contains(colorize, _char) && char != " " && char != "R") {
+			char = fmt.Sprintf("%s%s%s", color, string(char), "\033[0m")
+			return char, true
+		}
 	}
 	return char, false
 }

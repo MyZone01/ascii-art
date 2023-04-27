@@ -6,15 +6,17 @@ import (
 	"strings"
 )
 
-func GetArgs() (string, string, string, string, string, string, bool) {
+func GetArgs() (string, string, string, string, string, string, bool, bool) {
 	input := ""
-	typeAscii := "standard"
+	asciiFont := "standard"
 	outputFile := ""
 	isReverse := false
+	errors := false
 	align := "left"
 	colorize := ""
 	colorCode := ""
-	for _, arg := range os.Args {
+	args := os.Args[1:]
+	for i, arg := range args {
 		if len(arg) > 9 && arg[:9] == "--output=" {
 			outputFile = strings.Split(arg, `=`)[1]
 		} else if len(arg) > 8 && arg[:8] == "--align=" {
@@ -24,15 +26,15 @@ func GetArgs() (string, string, string, string, string, string, bool) {
 			_text, err := os.ReadFile(fileName)
 			if err != nil {
 				fmt.Println("❌ ERROR: File not found")
-				os.Exit(1)
+				errors = true
 			}
 			input = string(_text)
 			if len(input) == 0 {
 				fmt.Println("❌ ERROR: Bad file format")
-				os.Exit(1)
+				errors = true
 			}
 			isReverse = true
-		} else if len(arg) > 8 && arg[:8] == "--color=" {
+		} else if i+1 <= len(args)-1 && len(arg) > 8 && arg[:8] == "--color=" {
 			arr := strings.Split(arg, `=`)
 			_colorCode := arr[1]
 			if _colorCode[0] == '#' {
@@ -40,18 +42,48 @@ func GetArgs() (string, string, string, string, string, string, bool) {
 			} else if len(_colorCode) >= 12 && _colorCode[:4] == "rgb(" {
 				colorCode = RGBToANSI(_colorCode)
 			} else {
-				colorCode = ansiColors[_colorCode]
+				_color, ok := ansiColors[_colorCode]
+				if ok {
+					colorCode = _color
+				} else {
+					fmt.Println("❌ ERROR: The program don't handle that color try using rgb or hex notation")
+					errors = true
+				}
 			}
-			if len(arr) == 3 {
-				colorize = arr[2]
+			if i+1 == len(args)-1 {
+				input = args[i+1]
+				break
+			} else if i+2 == len(args)-1 {
+				colorize = args[i+1]
+				input = args[i+2]
+				break
+			} else if i+3 == len(args)-1 {
+				colorize = args[i+1]
+				input = args[i+2]
+				asciiFont = args[i+3]
+				break
+			} else {
+				fmt.Println("❌ ERROR: The color flag must be placed at last")
+				errors = true
 			}
-		} else if arg == "standard" || arg == "thinkertoy" || arg == "shadow" {
-			typeAscii = arg
+		} else if i == len(args)-1 {
+			if input != "" || isReverse {
+				asciiFont = arg
+			} else {
+				input = arg
+			}
 		} else {
 			input = arg
 		}
 	}
-	return input, typeAscii, outputFile, align, colorCode, colorize, isReverse
+	if asciiFont != "standard" && asciiFont != "thinkertoy" && asciiFont != "shadow" && asciiFont != "zigzag" && asciiFont != "htag" {
+		fmt.Println("❌ ERROR: The program don't handle that color try using rgb or hex notation")
+		errors = true
+	}
+	if input == "" && len(os.Args) > 1 {
+		errors = true
+	}
+	return input, asciiFont, outputFile, align, colorCode, colorize, isReverse, errors
 }
 
 func IsValid(text []string) bool {
@@ -88,6 +120,32 @@ func IsAsciiSpace(text [][]rune, line, col int) bool {
 
 func PrintAscii(output string) {
 	fmt.Print(output)
+}
+
+func PrintUsageError() {
+	fmt.Println("Usage: go run . [OPTIONS] [STRING] [BANNER]")
+	fmt.Println()
+	fmt.Println("Example: go run . something")
+	fmt.Println("Example: go run . something <font>")
+	fmt.Println("Example: go run . --reverse=<fileName>")
+	fmt.Println("Example: go run . --align=<position> something")
+	fmt.Println("Example: go run . --align=<position> something <font>")
+	fmt.Println("Example: go run . --output=<fileName> something <font>")
+	fmt.Println("Example: go run . --color=<color> <letters to be colored> something")
+	fmt.Println()
+	fmt.Println("🚨 When you want to combine flag take in mind that the color tag must be the last of them")
+	fmt.Println("🚨 Reverse is a text generate with ZIGZAG font is not handle yet")
+}
+
+func PrintLogo() {
+	_content, err := os.ReadFile("assets/01-logo")
+	content := string(_content)
+	if err != nil {
+		fmt.Println("❌ ERROR: exit when reading logo's file")
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fmt.Println(content)
 }
 
 func ParseFile(name string, isJustifying bool) map[int][][]rune {
